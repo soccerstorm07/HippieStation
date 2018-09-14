@@ -27,8 +27,13 @@
 	max_amount = max(0, max_amt)
 	show_on_examine = _show_on_examine
 	disable_attackby = _disable_attackby
+
 	if(allowed_types)
-		allowed_typecache = typecacheof(allowed_types)
+		if(ispath(allowed_types) && allowed_types == /obj/item/stack)
+			allowed_typecache = GLOB.typecache_stack
+		else
+			allowed_typecache = typecacheof(allowed_types)
+
 	precondition = _precondition
 	after_insert = _after_insert
 
@@ -44,7 +49,7 @@
 			var/mat_path = possible_mats[id]
 			materials[id] = new mat_path()
 
-/datum/component/material_container/proc/OnExamine(mob/user)
+/datum/component/material_container/proc/OnExamine(datum/source, mob/user)
 	if(show_on_examine)
 		for(var/I in materials)
 			var/datum/material/M = materials[I]
@@ -52,7 +57,7 @@
 			if(amt)
 				to_chat(user, "<span class='notice'>It has [amt] units of [lowertext(M.name)] stored.</span>")
 
-/datum/component/material_container/proc/OnAttackBy(obj/item/I, mob/living/user)
+/datum/component/material_container/proc/OnAttackBy(datum/source, obj/item/I, mob/living/user)
 	var/list/tc = allowed_typecache
 	if(disable_attackby)
 		return
@@ -74,7 +79,7 @@
 	if(!has_space(material_amount))
 		to_chat(user, "<span class='warning'>[parent] is full. Please remove metal or glass from [parent] in order to insert more.</span>")
 		return
-	INVOKE_ASYNC(src, .proc/user_insert, I, user)		//It wasn't returning COMPONENT_NO_AFTERATTACK properly without this being specifically asynced.
+	user_insert(I, user)
 
 /datum/component/material_container/proc/user_insert(obj/item/I, mob/living/user)
 	set waitfor = FALSE

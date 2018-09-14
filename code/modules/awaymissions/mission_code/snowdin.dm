@@ -113,7 +113,7 @@
 
 
 /area/awaymission/snowdin/base
-	name = "Snowdin Main base"
+	name = "Snowdin Main Base"
 	icon_state = "awaycontent16"
 	dynamic_lighting = DYNAMIC_LIGHTING_ENABLED
 	requires_power = TRUE
@@ -148,11 +148,6 @@
 
 
 //liquid plasma!!!!!!//
-
-/turf/open/floor/plasteel/vault/snowdin
-	initial_gas_mix = "o2=22;n2=82;TEMP=180"
-	planetary_atmos = 1
-	temperature = 180
 
 /turf/open/floor/plasteel/dark/snowdin
 	initial_gas_mix = "o2=22;n2=82;TEMP=180"
@@ -264,8 +259,8 @@
 
 /obj/item/paper/crumpled/ruins/snowdin/foreshadowing
 	name = "scribbled note"
-	info = {"Somnething's gone VERY wrong here. Jouslen has been mumbling about some weird shit in his cabin during the night and he seems always tired when we're working. I tried to confront him about it and he blew up on me,
-	 telling me to mind my own business. I reported him to the officer, said he'd look into it. We only got another 2 months here before we're pulled for another assignment, so this shit can't go any quicker.."}
+	info = {"Something's gone VERY wrong here. Jouslen has been mumbling about some weird shit in his cabin during the night and he seems always tired when we're working. I tried to confront him about it and he blew up on me,
+	 telling me to mind my own business. I reported him to the officer, said he'd look into it. We only got another 2 months here before we're pulled for another assignment, so this shit can't go any quicker..."}
 
 /obj/item/paper/crumpled/ruins/snowdin/misc1
 	name = "Mission Prologue"
@@ -276,7 +271,7 @@
 	name = "scribbled note"
 	info = {"If you're reading this: GET OUT! The mining go on here has unearthed something that was once-trapped by the layers of ice on this hell-hole. The overseer and Jouslen have gone missing. The officer is
 	 keeping the rest of us on lockdown and I swear to god I keep hearing strange noises outside the walls at night. The gateway link has gone dead and without a supply of resources from Central, we're left
-	 for dead here. We haven't heard anything back from the mining squad either, so I can only assume whatever the fuck they unearthed got them first before coming for us. I don't want to die here.."}
+	 for dead here. We haven't heard anything back from the mining squad either, so I can only assume whatever the fuck they unearthed got them first before coming for us. I don't want to die here..."}
 
 /obj/item/paper/fluff/awaymissions/snowdin/saw_usage
 	name = "SAW Usage"
@@ -324,13 +319,13 @@
 
 /obj/item/paper/fluff/awaymissions/snowdin/secnotice
 	name = "Security Notice"
-	info = {"YOu have been assigned to this Arctic Post with intention of protecting Nanotrasen assets and ensuring vital Information is kept secure while the stationed crew obeys protocal. The picked
+	info = {"YOu have been assigned to this Arctic Post with intention of protecting Nanotrasen assets and ensuring vital information is kept secure while the stationed crew obeys protocol. The picked
 		staff for this post have been pre-screened with no prior incidients on record, but incase of an issue you have been given a single holding cell and instructions to contact Central to terminate the
 		offending crewmember."}
 
 /obj/item/paper/fluff/awaymissions/snowdin/mining
 	name = "Assignment Notice"
-	info = {"This cold-ass planet is the new-age equivalentof striking gold. Huge deposits of plasma and literal streams of plasma run through the caverns under all this ice and we're here to mine it all.\
+	info = {"This cold-ass planet is the new-age equivalent of striking gold. Huge deposits of plasma and literal streams of plasma run through the caverns under all this ice and we're here to mine it all.\
 	 Nanotrasen pays by the pound, so get minin' boys!"}
 
 /obj/item/paper/crumpled/ruins/snowdin/lootstructures
@@ -389,7 +384,7 @@
 	DELAY 30
 	SAY Nanotrasen is pleased to have you working in one of the many top-of-the-line research posts within the $%@!! sector!
 	DELAY 30
-	SAY Further job assignment Information can be found at your local security post! Have a secure day!
+	SAY Further job assignment information can be found at your local security post! Have a secure day!
 	DELAY 20;"}
 
 /obj/item/disk/holodisk/snowdin/overrun

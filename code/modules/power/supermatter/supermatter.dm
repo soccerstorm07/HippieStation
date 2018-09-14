@@ -139,7 +139,7 @@ GLOBAL_DATUM(main_supermatter_engine, /obj/machinery/power/supermatter_crystal)
 
 	var/is_main_engine = FALSE
 
-	//var/datum/looping_sound/supermatter/soundloop hippie code removes soundloop
+	var/datum/looping_sound/supermatter/soundloop
 
 	var/moveable = FALSE
 
@@ -158,7 +158,7 @@ GLOBAL_DATUM(main_supermatter_engine, /obj/machinery/power/supermatter_crystal)
 	if(is_main_engine)
 		GLOB.main_supermatter_engine = src
 
-	//soundloop = new(list(src), TRUE) hippie code removes sound loop
+	soundloop = new(list(src), TRUE)
 
 /obj/machinery/power/supermatter_crystal/Destroy()
 	investigate_log("has been destroyed.", INVESTIGATE_SUPERMATTER)
@@ -168,7 +168,7 @@ GLOBAL_DATUM(main_supermatter_engine, /obj/machinery/power/supermatter_crystal)
 	QDEL_NULL(countdown)
 	if(is_main_engine && GLOB.main_supermatter_engine == src)
 		GLOB.main_supermatter_engine = null
-	//QDEL_NULL(soundloop) hippie code removes sound loop
+	QDEL_NULL(soundloop)
 	return ..()
 
 /obj/machinery/power/supermatter_crystal/examine(mob/user)
@@ -304,9 +304,8 @@ GLOBAL_DATUM(main_supermatter_engine, /obj/machinery/power/supermatter_crystal)
 	if(!istype(T)) 	//We are in a crate or somewhere that isn't turf, if we return to turf resume processing but for now.
 		return  //Yeah just stop.
 
-	//hippie code
-	//if(power)
-	//	soundloop.volume = min(40, (round(power/100)/50)+1) // 5 +1 volume per 20 power. 2500 power is max
+	if(power)
+		soundloop.volume = min(40, (round(power/100)/50)+1) // 5 +1 volume per 20 power. 2500 power is max
 
 	//Ok, get the air from the turf
 	var/datum/gas_mixture/env = T.return_air()
@@ -520,9 +519,11 @@ GLOBAL_DATUM(main_supermatter_engine, /obj/machinery/power/supermatter_crystal)
 /obj/machinery/power/supermatter_crystal/attack_tk(mob/user)
 	if(iscarbon(user))
 		var/mob/living/carbon/C = user
-		to_chat(C, "<span class='userdanger'>That was a really dumb idea.</span>")
-		var/obj/item/bodypart/head/rip_u = C.get_bodypart(BODY_ZONE_HEAD)
-		rip_u.dismember(BURN) //nice try jedi
+		to_chat(C, "<span class='userdanger'>That was a really dense idea.</span>")
+		C.ghostize()
+		var/obj/item/organ/brain/rip_u = locate(/obj/item/organ/brain) in C.internal_organs
+		rip_u.Remove(C)
+		qdel(rip_u)
 
 /obj/machinery/power/supermatter_crystal/attack_paw(mob/user)
 	dust_mob(user, cause = "monkey attack")
@@ -622,7 +623,11 @@ GLOBAL_DATUM(main_supermatter_engine, /obj/machinery/power/supermatter_crystal)
 		return
 	else if(isobj(AM))
 		if(!iseffect(AM))
-			investigate_log("has consumed [AM].", INVESTIGATE_SUPERMATTER)
+			var/suspicion = ""
+			if(AM.fingerprintslast)
+				suspicion = "last touched by [AM.fingerprintslast]"
+				message_admins("[src] has consumed [AM], [suspicion] [ADMIN_JMP(src)].")
+			investigate_log("has consumed [AM] - [suspicion].", INVESTIGATE_SUPERMATTER)
 		qdel(AM)
 	if(!iseffect(AM))
 		matter_power += 200

@@ -590,7 +590,7 @@
 		to_chat(user, "There is no [fitting] in this light.")
 		return
 
-	// make it burn hands if not wearing fire-insulated gloves
+	// make it burn hands unless you're wearing heat insulated gloves or have the RESISTHEAT/RESISTHEATHANDS traits
 	if(on)
 		var/prot = 0
 		var/mob/living/carbon/human/H = user
@@ -604,7 +604,7 @@
 		else
 			prot = 1
 
-		if(prot > 0)
+		if(prot > 0 || user.has_trait(TRAIT_RESISTHEAT) || user.has_trait(TRAIT_RESISTHEATHANDS))
 			to_chat(user, "<span class='notice'>You remove the light [fitting].</span>")
 		else if(istype(user) && user.dna.check_mutation(TK))
 			to_chat(user, "<span class='notice'>You telekinetically remove the light [fitting].</span>")
@@ -719,24 +719,6 @@
 	grind_results = list("silicon" = 5, "nitrogen" = 10) //Nitrogen is used as a cheaper alternative to argon in incandescent lighbulbs
 	var/rigged = 0		// true if rigged to explode
 	var/brightness = 2 //how much light it gives off
-	
-/obj/item/light/suicide_act(mob/living/carbon/user)
-	if (status == LIGHT_BROKEN)
-		user.visible_message("<span class='suicide'>[user] begins to stab [user.p_them()]self with \the [src]! It looks like [user.p_theyre()] trying to commit suicide!</span>")
-		return BRUTELOSS
-	else
-		user.visible_message("<span class='suicide'>[user] begins to eat \the [src]! It looks like [user.p_theyre()] not very bright!</span>")
-		shatter()
-		return BRUTELOSS
-
-/obj/item/light/suicide_act(mob/living/carbon/user)
-	if (status == LIGHT_BROKEN)
-		user.visible_message("<span class='suicide'>[user] begins to stab [user.p_them()]self with \the [src]! It looks like [user.p_theyre()] trying to commit suicide!</span>")
-		return BRUTELOSS
-	else
-		user.visible_message("<span class='suicide'>[user] begins to eat \the [src]! It looks like [user.p_theyre()] not very bright!</span>")
-		shatter()
-		return BRUTELOSS
 
 /obj/item/light/suicide_act(mob/living/carbon/user)
 	if (status == LIGHT_BROKEN)

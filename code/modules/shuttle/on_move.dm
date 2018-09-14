@@ -2,7 +2,7 @@
 All ShuttleMove procs go here
 */
 
-/************************************base procs************************************/
+/************************************Base procs************************************/
 
 // Called on every turf in the shuttle region, returns a bitflag for allowed movements of that turf
 // returns the new move_mode (based on the old)
@@ -48,7 +48,7 @@ All ShuttleMove procs go here
 	if(newT == src) // In case of in place shuttle rotation shenanigans.
 		return
 	//Destination turf changes
-	//baseturfs is definitely a list or this proc wouldnt be called
+	//Baseturfs is definitely a list or this proc wouldnt be called
 	var/shuttle_boundary = baseturfs.Find(/turf/baseturf_skipover/shuttle)
 	if(!shuttle_boundary)
 		CRASH("A turf queued to move via shuttle somehow had no skipover in baseturfs. [src]([type]):[loc]")
@@ -183,10 +183,12 @@ All ShuttleMove procs go here
 
 /obj/machinery/door/airlock/afterShuttleMove(turf/oldT, list/movement_force, shuttle_dir, shuttle_preferred_direction, move_dir, rotation)
 	. = ..()
+	var/current_area = get_area(src)
 	for(var/obj/machinery/door/airlock/A in orange(1, src))  // does not include src
-		// Cycle linking is only disabled if we are actually adjacent to another airlock
-		shuttledocked = TRUE
-		A.shuttledocked = TRUE
+		if(get_area(A) != current_area)  // does not include double-wide airlocks unless actually docked
+			// Cycle linking is only disabled if we are actually adjacent to another airlock
+			shuttledocked = TRUE
+			A.shuttledocked = TRUE
 
 /obj/machinery/camera/beforeShuttleMove(turf/newT, rotation, move_mode, obj/docking_port/mobile/moving_dock)
 	. = ..()

@@ -201,7 +201,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 10
 	surplus = 40
 	include_modes = list(/datum/game_mode/nuclear)
-	
+
 /datum/uplink_item/dangerous/carbine
 	name = "M-90gl Carbine"
 	desc = "A fully-loaded, specialized three-round burst carbine that fires 5.56mm ammunition from a 30 round magazine \
@@ -526,7 +526,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/backpack/duffelbag/syndie/ammo/smg
 	cost = 20
 	include_modes = list(/datum/game_mode/nuclear)
-	
+
 /datum/uplink_item/ammo/carbine
 	name = "5.56mm Toploader Magazine"
 	desc = "An additional 30-round 5.56mm magazine; suitable for use with the M-90gl carbine. \
@@ -534,7 +534,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/ammo_box/magazine/m556
 	cost = 4
 	include_modes = list(/datum/game_mode/nuclear)
-	
+
 /datum/uplink_item/ammo/a40mm
 	name = "40mm Grenade"
 	desc = "A 40mm HE grenade for use with the M-90gl's under-barrel grenade launcher. \
@@ -638,6 +638,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	name = "Syndicate Medical Cyborg"
 	desc = "A combat medic cyborg, with potent healing reagents and a medical beam gun, but limited offensive potential."
 	item = /obj/item/antag_spawner/nuke_ops/borg_tele/medical
+	refundable = TRUE
+	cost = 35
+	restricted = TRUE
+
+/datum/uplink_item/support/reinforcement/saboteur_borg
+	name = "Syndicate Saboteur Cyborg"
+	desc = "A streamlined engineering cyborg, equipped with thermal vision and the ability to traverse Nanotrasen's disposal network. Also incapable of leaving the welder in the shuttle."
+	item = /obj/item/antag_spawner/nuke_ops/borg_tele/saboteur
 	refundable = TRUE
 	cost = 35
 	restricted = TRUE
@@ -914,6 +922,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/disk/nuclear/fake
 	cost = 1
 	surplus = 1
+	surplus_nullcrates = 0
 
 //Space Suits and Hardsuits
 /datum/uplink_item/suits
@@ -1053,15 +1062,11 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 
 /datum/uplink_item/device_tools/briefcase_launchpad
 	name = "Briefcase Launchpad"
-	desc = "A briefcase containing a launchpad, a device able to teleport items and people to and from targets up to three tiles away from the briefcase. \
-			Also includes a remote control. Touch the briefcase with the remote to link it."
+	desc = "A briefcase containing a launchpad, a device able to teleport items and people to and from targets up to eight tiles away from the briefcase. \
+			Also includes a remote control, disguised as an ordinary folder. Touch the briefcase with the remote to link it."
 	surplus = 0
-	item = /obj/item/briefcase_launchpad
+	item = /obj/item/storage/briefcase/launchpad
 	cost = 6
-
-/datum/uplink_item/device_tools/briefcase_launchpad/purchase(mob/user, datum/component/uplink/U)
-	spawn_item(/obj/item/launchpad_remote, user) //free remote
-	..()
 
 /datum/uplink_item/device_tools/magboots
 	name = "Blood-Red Magboots"
@@ -1455,38 +1460,6 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	limited_stock = 2 //you can't use more than two!
 	restricted_roles = list("Shaft Miner")
 
-/datum/uplink_item/device_tools/clown_bomb
-	name = "Clown Bomb"
-	desc = "The Clown bomb is a hilarious device capable of massive pranks. It has an adjustable timer, \
-			with a minimum of 60 seconds, and can be bolted to the floor with a wrench to prevent \
-			movement. The bomb is bulky and cannot be moved; upon ordering this item, a smaller beacon will be \
-			transported to you that will teleport the actual bomb to it upon activation. Note that this bomb can \
-			be defused, and some crew may attempt to do so."
-	item = /obj/item/sbeacondrop/clownbomb
-	cost = 15
-	restricted_roles = list("Clown")
-
-/datum/uplink_item/device_tools/clown_bomb
-	name = "Clown Bomb"
-	desc = "The Clown bomb is a hilarious device capable of massive pranks. It has an adjustable timer, \
-			with a minimum of 60 seconds, and can be bolted to the floor with a wrench to prevent \
-			movement. The bomb is bulky and cannot be moved; upon ordering this item, a smaller beacon will be \
-			transported to you that will teleport the actual bomb to it upon activation. Note that this bomb can \
-			be defused, and some crew may attempt to do so."
-	item = /obj/item/sbeacondrop/clownbomb
-	cost = 15
-	restricted_roles = list("Clown")
-
-/datum/uplink_item/role_restricted/blastcannon
-	name = "Blast Cannon"
-	desc = "A highly specialized weapon, the Blast Cannon is actually relatively simple. It contains an attachment for a tank transfer valve mounted to an angled pipe specially constructed \
-			withstand extreme pressure and temperatures, and has a mechanical trigger for triggering the transfer valve. Essentially, it turns the explosive force of a bomb into a narrow-angle \
-			blast wave \"projectile\". Aspiring scientists may find this highly useful, as forcing the pressure shockwave into a narrow angle seems to be able to bypass whatever quirk of physics \
-			disallows explosive ranges above a certain distance, allowing for the device to use the theoretical yield of a transfer valve bomb, instead of the factual yield."
-	item = /obj/item/gun/blastcannon
-	cost = 14							//High cost because of the potential for extreme damage in the hands of a skilled scientist.
-	restricted_roles = list("Research Director", "Scientist")
-
 /datum/uplink_item/role_restricted/blastcannon
 	name = "Blast Cannon"
 	desc = "A highly specialized weapon, the Blast Cannon is actually relatively simple. It contains an attachment for a tank transfer valve mounted to an angled pipe specially constructed \
@@ -1505,6 +1478,17 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			transported to you that will teleport the actual bomb to it upon activation. Note that this bomb can \
 			be defused, and some crew may attempt to do so."
 	item = /obj/item/sbeacondrop/clownbomb
+	cost = 15
+	restricted_roles = list("Clown")
+
+/datum/uplink_item/role_restricted/clowncar
+	name = "Clown Car"
+	desc = "The Clown Car is the ultimate transportation method for any worthy clown! \
+			Simply insert your bikehorn and get in, and get ready to have the funniest ride of your life! \
+			You can ram any spacemen you come across and stuff them into your car, kidnapping them and locking them inside until \
+			someone saves them or they manage to crawl out. Be sure not to ram into any walls or vending machines, as the springloaded seats \
+			are very sensetive. Now with our included lube defense mechanism which will protect you against any angry shitcurity!"
+	item = /obj/vehicle/sealed/car/clowncar
 	cost = 15
 	restricted_roles = list("Clown")
 

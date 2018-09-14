@@ -373,7 +373,7 @@ RLD
 			to_chat(user, "<span class='notice'>You change RCD's mode to 'Grilles & Windows'.</span>")
 		if(4)
 			mode = 1
-			to_chat(user, "<span class='notice'>You change RCD's mode to 'floor & Walls'.</span>")
+			to_chat(user, "<span class='notice'>You change RCD's mode to 'Floor & Walls'.</span>")
 
 /obj/item/construction/rcd/proc/target_check(atom/A, mob/user) // only returns true for stuff the device can actually work with
 	if((isturf(A) && A.density && mode==RCD_DECONSTRUCT) || (isturf(A) && !A.density) || (istype(A, /obj/machinery/door/airlock) && mode==RCD_DECONSTRUCT) || istype(A, /obj/structure/grille) || (istype(A, /obj/structure/window) && mode==RCD_DECONSTRUCT) || istype(A, /obj/structure/girder))
@@ -406,13 +406,14 @@ RLD
 		add_overlay("[icon_state]_charge[ratio]")
 
 /obj/item/construction/rcd/Initialize()
-	..()
+	. = ..()
 	update_icon()
 
 /obj/item/construction/rcd/borg
 	no_ammo_message = "<span class='warning'>Insufficient charge.</span>"
 	desc = "A device used to rapidly build walls and floors."
 	canRturf = TRUE
+	var/energyfactor = 72
 
 
 /obj/item/construction/rcd/borg/useResource(amount, mob/user)
@@ -423,7 +424,7 @@ RLD
 		if(user)
 			to_chat(user, no_ammo_message)
 		return 0
-	. = borgy.cell.use(amount * 72) //borgs get 1.3x the use of their RCDs
+	. = borgy.cell.use(amount * energyfactor) //borgs get 1.3x the use of their RCDs
 	if(!. && user)
 		to_chat(user, no_ammo_message)
 	return .
@@ -436,10 +437,15 @@ RLD
 		if(user)
 			to_chat(user, no_ammo_message)
 		return 0
-	. = borgy.cell.charge >= (amount * 72)
+	. = borgy.cell.charge >= (amount * energyfactor)
 	if(!. && user)
 		to_chat(user, no_ammo_message)
 	return .
+
+/obj/item/construction/rcd/borg/syndicate
+	icon_state = "ircd"
+	item_state = "ircd"
+	energyfactor = 66
 
 /obj/item/construction/rcd/loaded
 	matter = 160
@@ -619,7 +625,7 @@ RLD
 						var/light = get_turf(winner)
 						var/align = get_dir(winner, A)
 						var/obj/machinery/light/L = new /obj/machinery/light(light)
-						L.dir = align
+						L.setDir(align)
 						L.color = color_choice
 						L.light_color = L.color
 						return TRUE

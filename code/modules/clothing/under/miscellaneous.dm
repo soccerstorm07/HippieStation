@@ -38,7 +38,7 @@
 	can_adjust = FALSE
 
 /obj/item/clothing/under/roman
-	name = "roman armor"
+	name = "\improper Roman armor"
 	desc = "Ancient Roman armor. Made of metallic and leather straps."
 	icon_state = "roman"
 	item_color = "roman"
@@ -263,7 +263,7 @@
 
 /obj/item/clothing/under/suit_jacket/white
 	name = "white suit"
-	desc = "A white suit and jacket with a blue shirt. You wanna play rough? OKAY!."
+	desc = "A white suit and jacket with a blue shirt. You wanna play rough? OKAY!"
 	icon_state = "white_suit"
 	item_state = "white_suit"
 	item_color = "white_suit"
@@ -672,7 +672,7 @@
 	icon = 'icons/obj/device.dmi'
 
 /obj/item/clothing/under/rank/security/navyblue/russian
-	name = "russian officer's uniform"
+	name = "\improper Russian officer's uniform"
 	desc = "The latest in fashionable russian outfits."
 	icon_state = "hostanclothes"
 	item_state = "hostanclothes"
@@ -725,6 +725,14 @@
 	item_state = "lobster"
 	item_color = "lobster"
 	fitted = NO_FEMALE_UNIFORM
+	can_adjust = FALSE
+
+/obj/item/clothing/under/gondola
+	name = "gondola hide suit"
+	desc = "Now you're cooking."
+	icon_state = "gondola"
+	item_state = "lb_suit"
+	item_color = "gondola"
 	can_adjust = FALSE
 
 /obj/item/clothing/under/skeleton

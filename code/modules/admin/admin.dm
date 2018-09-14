@@ -29,7 +29,7 @@
 	body += "<body>Options panel for <b>[M]</b>"
 	if(M.client)
 		body += " played by <b>[M.client]</b> "
-		body += "\[<A href='?_src_=holder;[HrefToken()];editrights=[(GLOB.admin_datums[M.client.ckey] || GLOB.deadmins[M.client.ckey]) ? "rank" : "add"];ckey=[M.ckey]'>[M.client.holder ? M.client.holder.rank : "Player"]</A>\]"
+		body += "\[<A href='?_src_=holder;[HrefToken()];editrights=[(GLOB.admin_datums[M.client.ckey] || GLOB.deadmins[M.client.ckey]) ? "rank" : "add"];key=[M.key]'>[M.client.holder ? M.client.holder.rank : "Player"]</A>\]"
 		if(CONFIG_GET(flag/use_exp_tracking))
 			body += "\[<A href='?_src_=holder;[HrefToken()];getplaytimewindow=[REF(M)]'>" + M.client.get_exp_living() + "</a>\]"
 
@@ -43,6 +43,12 @@
 		body += "<br><br><b>Show related accounts by:</b> "
 		body += "\[ <a href='?_src_=holder;[HrefToken()];showrelatedacc=cid;client=[REF(M.client)]'>CID</a> | "
 		body += "<a href='?_src_=holder;[HrefToken()];showrelatedacc=ip;client=[REF(M.client)]'>IP</a> \]"
+
+		// hippie start -- warning when player has related accounts
+		if (M.client.related_accounts_cid || M.client.related_accounts_ip)
+			body += "<br><b><font color=red>Player has related accounts</font></b>"
+		// hippie end
+
 		var/rep = 0
 		rep += SSpersistence.antag_rep[M.ckey]
 		body += "<br><br>Antagonist reputation: [rep]"
@@ -66,10 +72,8 @@
 		body += "<a href='?_src_=holder;[HrefToken()];borgpanel=[REF(M)]'>BP</a> - "
 	body += "<a href='?priv_msg=[M.ckey]'>PM</a> - "
 	body += "<a href='?_src_=holder;[HrefToken()];subtlemessage=[REF(M)]'>SM</a> - "
-
 	if (ishuman(M) && M.mind)
 		body += "<a href='?_src_=holder;[HrefToken()];HeadsetMessage=[REF(M)]'>HM</a> - "
-		
 	body += "<a href='?_src_=holder;[HrefToken()];adminplayerobservefollow=[REF(M)]'>FLW</a> - "
 	//Default to client logs if available
 	var/source = LOGSRC_MOB
@@ -197,7 +201,7 @@
 		body += "<A href='?_src_=holder;[HrefToken()];tdomeadmin=[REF(M)]'>Thunderdome Admin</A> | "
 		body += "<A href='?_src_=holder;[HrefToken()];tdomeobserve=[REF(M)]'>Thunderdome Observer</A> | "
 
-	body += usr.client.HippiePPoptions(M) // hippie
+	body += usr.client.HippiePPoptions(M) // hippie -- Hippie player panel custom options
 	body += "<br>"
 	body += "</body></html>"
 
@@ -830,7 +834,7 @@
 				continue
 			if(message)
 				to_chat(C, message)
-			kicked_client_names.Add("[C.ckey]")
+			kicked_client_names.Add("[C.key]")
 			qdel(C)
 	return kicked_client_names
 
@@ -859,8 +863,8 @@
 
 	tomob.ghostize(0)
 
-	message_admins("<span class='adminnotice'>[key_name_admin(usr)] has put [frommob.ckey] in control of [tomob.name].</span>")
-	log_admin("[key_name(usr)] stuffed [frommob.ckey] into [tomob.name].")
+	message_admins("<span class='adminnotice'>[key_name_admin(usr)] has put [frommob.key] in control of [tomob.name].</span>")
+	log_admin("[key_name(usr)] stuffed [frommob.key] into [tomob.name].")
 	SSblackbox.record_feedback("tally", "admin_verb", 1, "Ghost Drag Control")
 
 	tomob.ckey = frommob.ckey

@@ -9,7 +9,7 @@
 	return {"Our military presence is inadequate in your sector.
 	 We need you to construct BSA-[rand(1,99)] Artillery position aboard your station.
 
-	 base parts are available for shipping via cargo.
+	 Base parts are available for shipping via cargo.
 	 -Nanotrasen Naval Command"}
 
 /datum/station_goal/bluespace_cannon/on_report()
@@ -168,12 +168,12 @@
 	top_layer = top_layer || mutable_appearance(icon, layer = ABOVE_MOB_LAYER)
 	switch(cannon_direction)
 		if(WEST)
-			dir = WEST
+			setDir(WEST)
 			pixel_x = -192
 			top_layer.icon_state = "top_west"
 			icon_state = "cannon_west"
 		if(EAST)
-			dir = EAST
+			setDir(EAST)
 			top_layer.icon_state = "top_east"
 			icon_state = "cannon_east"
 	add_overlay(top_layer)

@@ -47,7 +47,7 @@
 				atoms += A
 			CHECK_TICK
 
-	atomslist = atoms.Copy() // hippie - mgs box disguising
+	atomslist = atoms.Copy() // hippie -- mgs box disguising
 	var/icon/res = icon('icons/effects/96x96.dmi', "")
 	res.Scale(psize_x, psize_y)
 
@@ -74,7 +74,8 @@
 			xo += AM.step_x
 			yo += AM.step_y
 		var/icon/img = getFlatIcon(A)
-		res.Blend(img, blendMode2iconMode(A.blend_mode), xo, yo)
+		if(img)
+			res.Blend(img, blendMode2iconMode(A.blend_mode), xo, yo)
 		CHECK_TICK
 
 	if(!silent)

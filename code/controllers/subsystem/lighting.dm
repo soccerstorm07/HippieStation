@@ -25,7 +25,7 @@ SUBSYSTEM_DEF(lighting)
 
 	fire(FALSE, TRUE)
 
-	..()
+	return ..()
 
 /datum/controller/subsystem/lighting/fire(resumed, init_tick_checks)
 	MC_SPLIT_TICK_INIT(3)

@@ -129,6 +129,15 @@
 /obj/singularity/energy_ball/Bumped(atom/movable/AM)
 	dust_mobs(AM)
 
+/obj/singularity/energy_ball/attack_tk(mob/user)
+	if(iscarbon(user))
+		var/mob/living/carbon/C = user
+		to_chat(C, "<span class='userdanger'>That was a shockingly dumb idea.</span>")
+		var/obj/item/organ/brain/rip_u = locate(/obj/item/organ/brain) in C.internal_organs
+		C.ghostize(0)
+		qdel(rip_u)
+		C.death()
+
 /obj/singularity/energy_ball/orbit(obj/singularity/energy_ball/target)
 	if (istype(target))
 		target.orbiting_balls += src
@@ -269,7 +278,7 @@
 	//Alright, we've done our loop, now lets see if was anything interesting in range
 	if(closest_atom)
 		//common stuff
-		source.Beam(closest_atom, icon_state="lightning[rand(1,12)]", time=6, maxdistance = INFINITY) //Hippie code
+		source.Beam(closest_atom, icon_state="lightning[rand(1,12)]", time=5, maxdistance = INFINITY)
 		if(!(tesla_flags & TESLA_ALLOW_DUPLICATES))
 			LAZYSET(shocked_targets, closest_atom, TRUE)
 		var/zapdir = get_dir(source, closest_atom)

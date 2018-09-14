@@ -77,9 +77,6 @@
 	var/datum/action/turret_toggle/toggle_action
 	var/mob/remote_controller
 
-	var/lastdamage_time //Hippie code to override timer
-	var/reset_time = 60 //Hippie code
-
 /obj/machinery/porta_turret/Initialize()
 	. = ..()
 	if(!base)
@@ -326,12 +323,15 @@
 
 /obj/machinery/porta_turret/take_damage(damage, damage_type = BRUTE, damage_flag = 0, sound_effect = 1)
 	. = ..()
-	if(. && src && !QDELETED(src)) //damage received. Hippie code
+	if(.) //damage received
 		if(prob(30))
 			spark_system.start()
 		if(on && !attacked && !(obj_flags & EMAGGED))
 			attacked = TRUE
-			lastdamage_time = world.time + reset_time //Hippie code
+			addtimer(CALLBACK(src, .proc/reset_attacked), 60)
+
+/obj/machinery/porta_turret/proc/reset_attacked()
+	attacked = FALSE
 
 /obj/machinery/porta_turret/deconstruct(disassembled = TRUE)
 	qdel(src)
@@ -412,11 +412,6 @@
 	else if(!always_up)
 		popDown() // no valid targets, close the cover
 
-	//Hippie code reset the attack timer after 6 seconds
-	if(attacked && world.time > lastdamage_time)
-		attacked = FALSE
-
-
 /obj/machinery/porta_turret/proc/tryToShootAt(list/atom/movable/targets)
 	while(targets.len > 0)
 		var/atom/movable/M = pick(targets)
@@ -490,7 +485,7 @@
 			threatcount += 4
 
 	if(shoot_unloyal)
-		if (!perp.isloyal())
+		if (!perp.has_trait(TRAIT_MINDSHIELD))
 			threatcount += 4
 
 	return threatcount
@@ -553,6 +548,7 @@
 
 	//Shooting Code:
 	A.preparePixelProjectile(target, T)
+	A.firer = src
 	A.fire()
 	return A
 
@@ -626,7 +622,7 @@
 	if(!can_interact(caller))
 		remove_control()
 		return FALSE
-	add_logs(caller,A,"fired with manual turret control at")
+	log_combat(caller,A,"fired with manual turret control at")
 	target(A)
 	return TRUE
 
@@ -741,8 +737,8 @@
 	integrity_failure = 60
 	name = "Old Laser Turret"
 	desc = "A turret built with substandard parts and run down further with age. Still capable of delivering lethal lasers to the odd space carp, but not much else."
-	stun_projectile = /obj/item/projectile/beam/weak
-	lethal_projectile = /obj/item/projectile/beam/weak
+	stun_projectile = /obj/item/projectile/beam/weak/penetrator
+	lethal_projectile = /obj/item/projectile/beam/weak/penetrator
 	faction = list("neutral","silicon","turret")
 
 ////////////////////////
@@ -793,6 +789,12 @@
 	for(var/obj/machinery/porta_turret/T in control_area)
 		turrets |= T
 		T.cp = src
+
+/obj/machinery/turretid/examine(mob/user)
+	..()
+	if(issilicon(user) && (!stat & BROKEN))
+		to_chat(user, "<span class='notice'>Ctrl-click [src] to [ enabled ? "disable" : "enable"] turrets.</span>")
+		to_chat(user, "<span class='notice'>Alt-click [src] to set turrets to [ lethal ? "stun" : "kill"].</span>")
 
 /obj/machinery/turretid/attackby(obj/item/I, mob/user, params)
 	if(stat & BROKEN)

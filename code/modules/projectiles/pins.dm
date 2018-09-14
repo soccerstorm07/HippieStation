@@ -57,7 +57,8 @@
 	return TRUE
 
 /obj/item/firing_pin/proc/auth_fail(mob/living/user)
-	user.show_message(fail_message, 1)
+	if(user)
+		user.show_message(fail_message, 1)
 	if(selfdestruct)
 		user.show_message("<span class='danger'>SELF-DESTRUCTING...</span><br>", 1)
 		to_chat(user, "<span class='userdanger'>[gun] explodes!</span>")
@@ -80,6 +81,8 @@
 	pin_removeable = TRUE
 
 /obj/item/firing_pin/test_range/pin_auth(mob/living/user)
+	if(!istype(user))
+		return FALSE
 	for(var/obj/machinery/magnetic_controller/M in range(user, 3))
 		return TRUE
 	return FALSE
@@ -148,7 +151,7 @@
 
 
 // DNA-keyed pin.
-// When you want to keep your toys for youself.
+// When you want to keep your toys for yourself.
 /obj/item/firing_pin/dna
 	name = "DNA-keyed firing pin"
 	desc = "This is a DNA-locked firing pin which only authorizes one user. Attempt to fire once to DNA-link."

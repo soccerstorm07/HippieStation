@@ -30,6 +30,8 @@
 	blood_volume = BLOOD_VOLUME_NORMAL
 	var/obj/item/udder/udder = null
 
+	do_footstep = TRUE
+
 /mob/living/simple_animal/hostile/retaliate/goat/Initialize()
 	udder = new()
 	. = ..()
@@ -65,7 +67,7 @@
 	src.visible_message("<span class='danger'>[src] gets an evil-looking gleam in [p_their()] eye.</span>")
 
 /mob/living/simple_animal/hostile/retaliate/goat/Move()
-	..()
+	. = ..()
 	if(!stat)
 		eat_plants()
 
@@ -129,6 +131,8 @@
 	var/obj/item/udder/udder = null
 	gold_core_spawnable = FRIENDLY_SPAWN
 	blood_volume = BLOOD_VOLUME_NORMAL
+
+	do_footstep = TRUE
 
 /mob/living/simple_animal/cow/Initialize()
 	udder = new()
@@ -206,6 +210,8 @@
 	mob_size = MOB_SIZE_TINY
 	gold_core_spawnable = FRIENDLY_SPAWN
 
+	do_footstep = TRUE
+
 /mob/living/simple_animal/chick/Initialize()
 	. = ..()
 	pixel_x = rand(-6, 6)
@@ -261,6 +267,8 @@
 	var/list/validColors = list("brown","black","white")
 	gold_core_spawnable = FRIENDLY_SPAWN
 	var/static/chicken_count = 0
+
+	do_footstep = TRUE
 
 /mob/living/simple_animal/chicken/Initialize()
 	. = ..()

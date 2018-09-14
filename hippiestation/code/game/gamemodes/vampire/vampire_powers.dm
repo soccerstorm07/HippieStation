@@ -16,11 +16,11 @@
 			return FALSE
 
 /obj/effect/proc_holder/spell/Initialize()
-	. = ..()
 	if(vamp_req)
 		clothes_req = FALSE
 		range = 1
 		human_req = FALSE //so we can cast stuff while a bat, too
+	.=..()
 
 
 /obj/effect/proc_holder/spell/before_cast(list/targets)
@@ -152,8 +152,8 @@
 	vamp_req = TRUE
 
 /obj/effect/proc_holder/spell/self/cloak/Initialize()
-	. = ..()
 	update_name()
+	.=..()
 
 /obj/effect/proc_holder/spell/self/cloak/proc/update_name()
 	var/mob/living/user = loc
@@ -257,6 +257,7 @@
 /obj/effect/proc_holder/spell/targeted/ethereal_jaunt/mistform/Initialize()
 	. = ..()
 	range = -1
+	addtimer(VARSET_CALLBACK(src, range, -1), 10) //Avoid fuckery
 
 /obj/effect/proc_holder/spell/targeted/vampirize
 	name = "Lilith's Pact (500)"
@@ -273,7 +274,7 @@
 		if(is_vampire(target))
 			to_chat(user, "<span class='warning'>They're already a vampire!</span>")
 			continue
-		target.visible_message("<span class='warning'>[user] latches onto [target]'s neck, and a pure dread eminates from them.</span>", "<span class='warning'>You latch onto [target]'s neck, preparing to transfer your unholy blood to them.</span>", "<span class='warning'>A dreadful feeling overcomes you</span>")
+		user.visible_message("<span class='warning'>[user] latches onto [target]'s neck, and a pure dread eminates from them.</span>", "<span class='warning'>You latch onto [target]'s neck, preparing to transfer your unholy blood to them.</span>", "<span class='warning'>A dreadful feeling overcomes you</span>")
 		target.reagents.add_reagent("salbutamol", 10) //incase you're choking the victim
 		for(var/progress = 0, progress <= 3, progress++)
 			switch(progress)
@@ -331,18 +332,18 @@
 		new /obj/effect/decal/remains/human(L.loc)
 		L.dust()
 	to_chat(L, "<span class='notice'>We begin to reanimate... this will take a minute.</span>")
-	addtimer(CALLBACK(src, .proc/revive, L), rand(600, 750))
+	addtimer(CALLBACK(src, /obj/effect/proc_holder/spell/self/revive.proc/revive, L), 600)
 
 /obj/effect/proc_holder/spell/self/revive/proc/revive(mob/living/user)
-	if(user.reagents.has_reagent("holywater"))
-		to_chat(user, "<span class='danger'>We cannot revive, holy water is in our system!</span>")
-		return
-	user.revive()
+	user.revive(full_heal = TRUE)
 	user.visible_message("<span class='warning'>[user] reanimates from death!</span>", "<span class='notice'>We get back up.</span>")
-	user.fully_heal(TRUE)
-
-
-
+	var/list/missing = user.get_missing_limbs()
+	if(missing.len)
+		playsound(user, 'sound/magic/demon_consume.ogg', 50, 1)
+		user.visible_message("<span class='warning'>Shadowy matter takes the place of [user]'s missing limbs as they reform!</span>")
+		user.regenerate_limbs(0, list(BODY_ZONE_HEAD))
+	user.regenerate_organs()
+	
 /obj/effect/proc_holder/spell/self/summon_coat
 	name = "Summon Dracula Coat (5)"
 	gain_desc = "Now that you have reached full power, you can now pull a vampiric coat out of thin air!"
@@ -363,6 +364,7 @@
 		V.coat = new /obj/item/clothing/suit/draculacoat(user.loc)
 	else if(get_dist(V.coat, user) > 1 || !(V.coat in user.GetAllContents()))
 		V.coat.forceMove(user.loc)
+	user.put_in_hands(V.coat)
 	to_chat(user, "<span class='notice'>You summon your dracula coat.</span>")
 
 
@@ -382,7 +384,7 @@
 	var/datum/antagonist/vampire/V = user.mind.has_antag_datum(/datum/antagonist/vampire)
 	if(!V)
 		return FALSE
-	if(!bat)
+	if(!bat || bat.stat == DEAD)
 		if(V.usable_blood < 15)
 			to_chat(user, "<span class='warning'>You do not have enough blood to cast this!</span>")
 			return FALSE
@@ -391,6 +393,9 @@
 		bat.controller = user
 		user.status_flags |= GODMODE
 		user.mind.transfer_to(bat)
+		charge_counter = charge_max //so you don't need to wait 20 seconds to turn BACK.
+		recharging = FALSE
+		action.UpdateButtonIcon()
 	else
 		bat.controller.forceMove(bat.loc)
 		bat.controller.status_flags &= ~GODMODE

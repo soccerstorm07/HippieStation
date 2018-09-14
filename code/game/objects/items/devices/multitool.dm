@@ -32,6 +32,13 @@
 	var/datum/integrated_io/selected_io = null  //functional for integrated circuits.
 	var/mode = 0
 
+/obj/item/multitool/examine(mob/user)
+	..()
+	if(selected_io)
+		to_chat(user, "<span class='notice'>Activate [src] to detach the data wire.</span>")
+	if(buffer)
+		to_chat(user, "<span class='notice'>Its buffer contains [buffer].</span>")
+
 /obj/item/multitool/suicide_act(mob/living/carbon/user)
 	user.visible_message("<span class='suicide'>[user] puts the [src] to [user.p_their()] chest. It looks like [user.p_theyre()] trying to pulse [user.p_their()] heart off!</span>")
 	return OXYLOSS//theres a reason it wasnt recommended by doctors
@@ -58,7 +65,7 @@
 			to_chat(user, "<span class='warning'>Wiring \the [selected_io.holder]'s [selected_io.name] into itself is rather pointless.</span>")
 			return
 		if(io.io_type != selected_io.io_type)
-			to_chat(user, "<span class='warning'>Those two types of channels are incompatable.  The first is a [selected_io.io_type], \
+			to_chat(user, "<span class='warning'>Those two types of channels are incompatible.  The first is a [selected_io.io_type], \
 			while the second is a [io.io_type].</span>")
 			return
 		if(io.holder.assembly && io.holder.assembly != selected_io.holder.assembly)

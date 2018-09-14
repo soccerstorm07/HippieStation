@@ -36,7 +36,7 @@
 	icon_state = "beam_omni"
 
 /obj/effect/projectile/tracer/xray
-	name = "xray laser"
+	name = "\improper X-ray laser"
 	icon_state = "xray"
 
 /obj/effect/projectile/tracer/pulse
@@ -61,6 +61,8 @@
 
 /obj/effect/projectile/tracer/tracer/aiming
 	icon_state = "pixelbeam_greyscale"
+	layer = ABOVE_LIGHTING_LAYER
+	plane = ABOVE_LIGHTING_PLANE
 
 /obj/effect/projectile/tracer/wormhole
 	icon_state = "wormhole_g"

@@ -10,7 +10,7 @@
 
 /obj/item/gun/energy/beam_rifle
 	name = "particle acceleration rifle"
-	desc = "An energy-based anti material marksman rifle that uses highly charged particle beams moving at extreme velocities to decimate whatever is unfortunate enough to be targetted by one. \
+	desc = "An energy-based anti material marksman rifle that uses highly charged particle beams moving at extreme velocities to decimate whatever is unfortunate enough to be targeted by one. \
 		<span class='boldnotice'>Hold down left click while scoped to aim, when weapon is fully aimed (Tracer goes from red to green as it charges), release to fire. Moving while aiming or \
 		changing where you're pointing at while aiming will delay the aiming process depending on how much you changed.</span>"
 	icon = 'icons/obj/guns/energy.dmi'
@@ -184,7 +184,7 @@
 	. = ..()
 	fire_delay = delay
 	current_tracers = list()
-	START_PROCESSING(SSprojectiles, src)
+	START_PROCESSING(SSfastprocess, src)
 	zoom_lock_action = new(src)
 
 /obj/item/gun/energy/beam_rifle/Destroy()
@@ -529,7 +529,7 @@
 	if(check_pierce(target))
 		permutated += target
 		trajectory_ignore_forcemove = TRUE
-		forceMove(target)
+		forceMove(target.loc)
 		trajectory_ignore_forcemove = FALSE
 		return FALSE
 	if(!QDELETED(target))

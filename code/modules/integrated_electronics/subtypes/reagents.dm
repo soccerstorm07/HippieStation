@@ -65,7 +65,7 @@
 		)
 	outputs = list(
 		"volume used" = IC_PINTYPE_NUMBER,
-		"self reference" = IC_PINTYPE_REF
+		"self reference" = IC_PINTYPE_SELFREF
 		)
 	activators = list(
 		"inject" = IC_PINTYPE_PULSE_IN,
@@ -133,7 +133,7 @@
 
 			//Always log attemped injections for admins
 			var/contained = reagents.log_list()
-			add_logs(src, L, "attempted to inject", addition="which had [contained]")
+			log_combat(src, L, "attempted to inject", addition="which had [contained]")
 			L.visible_message("<span class='danger'>[acting_object] is trying to inject [L]!</span>", \
 								"<span class='userdanger'>[acting_object] is trying to inject you!</span>")
 			busy = TRUE
@@ -141,7 +141,7 @@
 				var/fraction = min(transfer_amount/reagents.total_volume, 1)
 				reagents.reaction(L, INJECT, fraction)
 				reagents.trans_to(L, transfer_amount)
-				add_logs(src, L, "injected", addition="which had [contained]")
+				log_combat(src, L, "injected", addition="which had [contained]")
 				L.visible_message("<span class='danger'>[acting_object] injects [L] with its needle!</span>", \
 									"<span class='userdanger'>[acting_object] injects you with its needle!</span>")
 			else
@@ -179,7 +179,6 @@
 			busy = FALSE
 
 		else
-			tramount = min(tramount, AM.reagents.total_volume)
 			if(!AM.reagents.total_volume)
 				acting_object.visible_message("<span class='notice'>[acting_object] tries to draw from [AM], but it is empty!</span>")
 				activate_pin(3)
@@ -268,7 +267,7 @@
 	inputs = list()
 	outputs = list(
 		"volume used" = IC_PINTYPE_NUMBER,
-		"self reference" = IC_PINTYPE_REF
+		"self reference" = IC_PINTYPE_SELFREF
 		)
 	activators = list("push ref" = IC_PINTYPE_PULSE_OUT)
 	spawn_flags = IC_SPAWN_DEFAULT|IC_SPAWN_RESEARCH
@@ -315,7 +314,7 @@
 		)
 	outputs = list(
 		"volume used" = IC_PINTYPE_NUMBER,
-		"self reference" = IC_PINTYPE_REF
+		"self reference" = IC_PINTYPE_SELFREF
 		)
 	activators = list(
 		"grind" = IC_PINTYPE_PULSE_IN,
@@ -362,7 +361,7 @@
 		)
 	outputs = list(
 		"volume used" = IC_PINTYPE_NUMBER,
-		"self reference" = IC_PINTYPE_REF
+		"self reference" = IC_PINTYPE_SELFREF
 		)
 	activators = list(
 		"juice" = IC_PINTYPE_PULSE_IN,
@@ -407,7 +406,7 @@
 	complexity = 8
 	outputs = list(
 		"volume used" = IC_PINTYPE_NUMBER,
-		"self reference" = IC_PINTYPE_REF,
+		"self reference" = IC_PINTYPE_SELFREF,
 		"list of reagents" = IC_PINTYPE_LIST
 		)
 	activators = list(
@@ -509,7 +508,7 @@
 		"on" = IC_PINTYPE_BOOLEAN
 		)
 	inputs_default = list("1" = 300)
-	outputs = list("volume used" = IC_PINTYPE_NUMBER,"self reference" = IC_PINTYPE_REF,"temperature" = IC_PINTYPE_NUMBER)
+	outputs = list("volume used" = IC_PINTYPE_NUMBER,"self reference" = IC_PINTYPE_SELFREF,"temperature" = IC_PINTYPE_NUMBER)
 	spawn_flags = IC_SPAWN_RESEARCH
 	var/heater_coefficient = 0.1
 

@@ -797,7 +797,7 @@
 	inputs = list(
 		"target NTNet addresses"= IC_PINTYPE_STRING,
 		"data to send"			= IC_PINTYPE_STRING,
-		"passkey"				= IC_PINTYPE_STRING, /* hippie - adds hackable passkey back in */
+		"passkey"				= IC_PINTYPE_STRING, /* hippie -- adds hackable passkey back in */
 		"secondary text"		= IC_PINTYPE_STRING
 		)
 	outputs = list(
@@ -827,7 +827,7 @@
 
 	var/datum/netdata/data = new
 	data.recipient_ids = splittext(target_address, ";")
-	var/key = get_pin_data(IC_INPUT, 4) // hippie start - adds passkey back in
+	var/key = get_pin_data(IC_INPUT, 4) // hippie start -- adds passkey back in
 	data.standard_format_data(message, text, key) // hippie end
 	ntnet_send(data)
 
@@ -890,11 +890,11 @@
 /obj/item/integrated_circuit/input/gps
 	name = "global positioning system"
 	desc = "This allows you to easily know the position of a machine containing this device."
-	extended_desc = "The coordinates that the GPS outputs are absolute, not relative."
+	extended_desc = "The coordinates that the GPS outputs are absolute, not relative. The full coords output has the coords separated by commas and is in string format."
 	icon_state = "gps"
 	complexity = 4
 	inputs = list()
-	outputs = list("X"= IC_PINTYPE_NUMBER, "Y" = IC_PINTYPE_NUMBER, "Z" = IC_PINTYPE_NUMBER)
+	outputs = list("X"= IC_PINTYPE_NUMBER, "Y" = IC_PINTYPE_NUMBER, "Z" = IC_PINTYPE_NUMBER, "full coords" = IC_PINTYPE_STRING)
 	activators = list("get coordinates" = IC_PINTYPE_PULSE_IN, "on get coordinates" = IC_PINTYPE_PULSE_OUT)
 	spawn_flags = IC_SPAWN_DEFAULT|IC_SPAWN_RESEARCH
 	power_draw_per_use = 30
@@ -905,13 +905,14 @@
 	set_pin_data(IC_OUTPUT, 1, null)
 	set_pin_data(IC_OUTPUT, 2, null)
 	set_pin_data(IC_OUTPUT, 3, null)
+	set_pin_data(IC_OUTPUT, 4, null)
 	if(!T)
 		return
 
 	set_pin_data(IC_OUTPUT, 1, T.x)
 	set_pin_data(IC_OUTPUT, 2, T.y)
 	set_pin_data(IC_OUTPUT, 3, T.z)
-
+	set_pin_data(IC_OUTPUT, 4, "[T.x],[T.y],[T.z]")
 	push_data()
 	activate_pin(2)
 
@@ -934,6 +935,7 @@
 	power_draw_per_use = 5
 
 /obj/item/integrated_circuit/input/microphone/Hear(message, atom/movable/speaker, message_langs, raw_message, radio_freq, spans, message_mode)
+	. = ..()
 	var/translated = FALSE
 	if(speaker && message)
 		if(raw_message)
@@ -1223,10 +1225,9 @@
 	for(var/i=1 to 6)
 		set_pin_data(IC_OUTPUT, i, null)
 	var/atom/target = get_pin_data_as_type(IC_INPUT, 1, /atom)
-	var/atom/movable/acting_object = get_object()
 	if(!target)
-		target = acting_object.loc
-	if(!target.Adjacent(acting_object))
+		target = get_turf(src)
+	if( get_dist(get_turf(target),get_turf(src)) > 1 )
 		activate_pin(3)
 		return
 

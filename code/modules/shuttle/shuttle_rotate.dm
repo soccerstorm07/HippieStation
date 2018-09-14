@@ -4,7 +4,7 @@ All shuttleRotate procs go here
 If ever any of these procs are useful for non-shuttles, rename it to proc/rotate and move it to be a generic atom proc
 */
 
-/************************************base proc************************************/
+/************************************Base proc************************************/
 
 /atom/proc/shuttleRotate(rotation, params=ROTATE_DIR|ROTATE_SMOOTH|ROTATE_OFFSET)
 	if(params & ROTATE_DIR)
@@ -106,9 +106,11 @@ If ever any of these procs are useful for non-shuttles, rename it to proc/rotate
 
 /obj/machinery/door/airlock/shuttleRotate(rotation, params)
 	. = ..()
-	if(cyclelinkeddir)
+	if(cyclelinkeddir && (params & ROTATE_DIR))
 		cyclelinkeddir = angle2dir(rotation+dir2angle(cyclelinkeddir))
-		cyclelinkairlock()
+		// If we update the linked airlock here, the partner airlock might
+		// not be present yet, so don't do that. Just assume we're still
+		// partnered with the same airlock as before.
 
 /obj/machinery/porta_turret/shuttleRotate(rotation, params)
 	. = ..()

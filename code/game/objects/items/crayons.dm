@@ -240,7 +240,7 @@
 			out += a
 	return jointext(out,"")
 
-/* hippie - I've tried very hard to get this piece of shit to work without mirroring it, but it's so badly done it gave me an aneurysm
+/* hippie start -- I've tried very hard to get this piece of shit to work without mirroring it, but it's so badly done it gave me an aneurysm
 /obj/item/toy/crayon/afterattack(atom/target, mob/user, proximity, params)
 	. = ..()
 	if(!proximity || !check_allowed_items(target))
@@ -251,6 +251,10 @@
 		cost = 5
 	if(istype(target, /obj/item/canvas))
 		cost = 0
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		if (H.has_trait(TRAIT_TAGGER))
+			cost *= 0.5
 	var/charges_used = use_charges(user, cost)
 	if(!charges_used)
 		return
@@ -369,7 +373,7 @@
 		reagents.reaction(t, TOUCH, fraction * volume_multiplier)
 		reagents.trans_to(t, ., volume_multiplier)
 	check_empty(user)
-*/
+hippie end */
 /obj/item/toy/crayon/attack(mob/M, mob/user)
 	if(edible && (M == user))
 		to_chat(user, "You take a bite of the [src.name]. Delicious!")
@@ -513,7 +517,7 @@
 	item_state = "spraycan"
 	lefthand_file = 'icons/mob/inhands/equipment/hydroponics_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/hydroponics_righthand.dmi'
-	desc = "A metallic container containing tasty paint.\n Alt-click to toggle the cap."
+	desc = "A metallic container containing tasty paint."
 
 	instant = TRUE
 	edible = FALSE
@@ -532,11 +536,11 @@
 	var/mob/living/carbon/human/H = user
 	if(is_capped || !actually_paints)
 		user.visible_message("<span class='suicide'>[user] shakes up [src] with a rattle and lifts it to [user.p_their()] mouth, but nothing happens!</span>")
-		user.say("MEDIOCRE!!")
+		user.say("MEDIOCRE!!", forced="spraycan suicide")
 		return SHAME
 	else
 		user.visible_message("<span class='suicide'>[user] shakes up [src] with a rattle and lifts it to [user.p_their()] mouth, spraying paint across [user.p_their()] teeth!</span>")
-		user.say("WITNESS ME!!")
+		user.say("WITNESS ME!!", forced="spraycan suicide")
 		if(pre_noise || post_noise)
 			playsound(loc, 'sound/effects/spray.ogg', 5, 1, 5)
 		if(can_change_colour)
@@ -569,6 +573,7 @@
 		to_chat(user, "It has [charges_left] use\s left.")
 	else
 		to_chat(user, "It is empty.")
+	to_chat(user, "<span class='notice'>Alt-click [src] to [ is_capped ? "take the cap off" : "put the cap on"].</span>")
 
 /obj/item/toy/crayon/spraycan/afterattack(atom/target, mob/user, proximity)
 	if(!proximity)

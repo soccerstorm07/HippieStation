@@ -42,7 +42,7 @@
 				target.take_overall_damage(40)
 
 		SSblackbox.record_feedback("nested tally", "changeling_powers", 1, list("Absorb DNA", "[i]"))
-		if(!do_mob(user, target, 150))
+		if(!do_mob(user, target, 50)) // hippie -- time reduced from 15 seconds to 5.
 			to_chat(user, "<span class='warning'>Our absorption of [target] has been interrupted!</span>")
 			changeling.isabsorbing = 0
 			return
@@ -68,7 +68,7 @@
 		//Recent as opposed to all because rounds tend to have a LOT of text.
 		var/list/recent_speech = list()
 
-		var/list/say_log = target.logging[INDIVIDUAL_SAY_LOG]
+		var/list/say_log = target.logging[LOG_SAY]
 
 		if(LAZYLEN(say_log) > LING_ABSORB_RECENT_SPEECH)
 			recent_speech = say_log.Copy(say_log.len-LING_ABSORB_RECENT_SPEECH+1,0) //0 so len-LING_ARS+1 to end of list

@@ -18,7 +18,10 @@
 		cost = 5
 	if(istype(target, /obj/item/canvas))
 		cost = 0
-
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		if (H.has_trait(TRAIT_TAGGER))
+			cost *= 0.5
 	if(istype(target, /obj/effect/decal/cleanable))
 		target = target.loc
 
@@ -220,7 +223,7 @@
 	post_noise = TRUE
 
 /obj/item/toy/crayon/spraycan/gang/Initialize(loc, datum/team/gang/G)
-	..()
+	.=..()
 	if(G)
 		gang = G
 		paint_color = G.color

@@ -2,7 +2,7 @@
 	see_invisible = SEE_INVISIBLE_LIVING
 	sight = 0
 	see_in_dark = 2
-	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD)
+	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD,NANITE_HUD,DIAG_NANITE_FULL_HUD)
 	pressure_resistance = 10
 
 	var/resize = 1 //Badminnery resize
@@ -102,7 +102,6 @@
 
 	var/list/obj/effect/proc_holder/abilities = list()
 
-	var/registered_z
 	var/can_be_held = FALSE	//whether this can be picked up and held.
 
 	var/radiation = 0 //If the mob is irradiated.

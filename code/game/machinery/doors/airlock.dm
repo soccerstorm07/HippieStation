@@ -147,7 +147,6 @@
 				welded = TRUE
 			if(24 to 30)
 				panel_open = TRUE
-
 	update_icon()
 
 /obj/machinery/door/airlock/ComponentInitialize()
@@ -362,6 +361,7 @@
 /obj/machinery/door/airlock/proc/regainMainPower()
 	if(src.secondsMainPowerLost > 0)
 		src.secondsMainPowerLost = 0
+	update_icon()
 
 /obj/machinery/door/airlock/proc/handlePowerRestore()
 	var/cont = TRUE
@@ -382,6 +382,7 @@
 			cont = TRUE
 	spawnPowerRestoreRunning = FALSE
 	updateDialog()
+	update_icon()
 
 /obj/machinery/door/airlock/proc/loseMainPower()
 	if(secondsMainPowerLost <= 0)
@@ -391,6 +392,7 @@
 	if(!spawnPowerRestoreRunning)
 		spawnPowerRestoreRunning = TRUE
 	INVOKE_ASYNC(src, .proc/handlePowerRestore)
+	update_icon()
 
 /obj/machinery/door/airlock/proc/loseBackupPower()
 	if(src.secondsBackupPowerLost < 60)
@@ -398,10 +400,12 @@
 	if(!spawnPowerRestoreRunning)
 		spawnPowerRestoreRunning = TRUE
 	INVOKE_ASYNC(src, .proc/handlePowerRestore)
+	update_icon()
 
 /obj/machinery/door/airlock/proc/regainBackupPower()
 	if(src.secondsBackupPowerLost > 0)
 		src.secondsBackupPowerLost = 0
+	update_icon()
 
 // shock user with probability prb (if all connections & power are working)
 // returns TRUE if shocked, FALSE otherwise
@@ -575,6 +579,7 @@
 	add_overlay(sparks_overlay)
 	add_overlay(damag_overlay)
 	add_overlay(note_overlay)
+	check_unres()
 
 /proc/get_airlock_overlay(icon_state, icon_file)
 	var/obj/machinery/door/airlock/A
@@ -583,6 +588,31 @@
 	var/iconkey = "[icon_state][icon_file]"
 	if((!(. = airlock_overlays[iconkey])))
 		. = airlock_overlays[iconkey] = mutable_appearance(icon_file, icon_state)
+
+/obj/machinery/door/airlock/proc/check_unres() //unrestricted sides. This overlay indicates which directions the player can access even without an ID
+	if(hasPower() && unres_sides)
+		if(unres_sides & NORTH)
+			var/image/I = image(icon='icons/obj/doors/airlocks/station/overlays.dmi', icon_state="unres_n") //layer=src.layer+1
+			I.pixel_y = 32
+			set_light(l_range = 2, l_power = 1)
+			add_overlay(I)
+		if(unres_sides & SOUTH)
+			var/image/I = image(icon='icons/obj/doors/airlocks/station/overlays.dmi', icon_state="unres_s") //layer=src.layer+1
+			I.pixel_y = -32
+			set_light(l_range = 2, l_power = 1)
+			add_overlay(I)
+		if(unres_sides & EAST)
+			var/image/I = image(icon='icons/obj/doors/airlocks/station/overlays.dmi', icon_state="unres_e") //layer=src.layer+1
+			I.pixel_x = 32
+			set_light(l_range = 2, l_power = 1)
+			add_overlay(I)
+		if(unres_sides & WEST)
+			var/image/I = image(icon='icons/obj/doors/airlocks/station/overlays.dmi', icon_state="unres_w") //layer=src.layer+1
+			I.pixel_x = -32
+			set_light(l_range = 2, l_power = 1)
+			add_overlay(I)
+	else
+		set_light(0)
 
 /obj/machinery/door/airlock/do_animate(animation)
 	switch(animation)
@@ -633,6 +663,12 @@
 			to_chat(user, "It looks a bit stronger.")
 		else
 			to_chat(user, "It looks very robust.")
+
+	if(issilicon(user) && (!stat & BROKEN))
+		to_chat(user, "<span class='notice'>Shift-click [src] to [ density ? "open" : "close"] it.</span>")
+		to_chat(user, "<span class='notice'>Ctrl-click [src] to [ locked ? "raise" : "drop"] its bolts.</span>")
+		to_chat(user, "<span class='notice'>Alt-click [src] to [ secondsElectrified ? "un-electrify" : "permanently electrify"] it.</span>")
+		to_chat(user, "<span class='notice'>Ctrl-Shift-click [src] to [ emergency ? "disable" : "enable"] emergency access.</span>")
 
 /obj/machinery/door/airlock/attack_ai(mob/user)
 	if(!src.canAIControl(user))
@@ -785,7 +821,7 @@
 					if(do_after(user, 20, 1, target = src))
 						if(!panel_open || !S.use(2))
 							return
-						user.visible_message("<span class='notice'>[user] reinforce \the [src] with metal.</span>",
+						user.visible_message("<span class='notice'>[user] reinforces \the [src] with metal.</span>",
 											"<span class='notice'>You reinforce \the [src] with metal.</span>")
 						security_level = AIRLOCK_SECURITY_METAL
 						update_icon()
@@ -799,7 +835,7 @@
 					if(do_after(user, 20, 1, target = src))
 						if(!panel_open || !S.use(2))
 							return
-						user.visible_message("<span class='notice'>[user] reinforce \the [src] with plasteel.</span>",
+						user.visible_message("<span class='notice'>[user] reinforces \the [src] with plasteel.</span>",
 											"<span class='notice'>You reinforce \the [src] with plasteel.</span>")
 						security_level = AIRLOCK_SECURITY_PLASTEEL
 						modify_max_integrity(normal_integrity * AIRLOCK_INTEGRITY_MULTIPLIER)
@@ -807,7 +843,7 @@
 						update_icon()
 					return
 			if(AIRLOCK_SECURITY_METAL)
-				if(istype(C, /obj/item/weldingtool))
+				if(C.tool_behaviour == TOOL_WELDER) // hippie -- make holotool work via tool behavior
 					if(!C.tool_start_check(user, amount=2))
 						return
 					to_chat(user, "<span class='notice'>You begin cutting the panel's shielding...</span>")
@@ -822,7 +858,7 @@
 						update_icon()
 					return
 			if(AIRLOCK_SECURITY_PLASTEEL_I_S)
-				if(istype(C, /obj/item/crowbar))
+				if(C.tool_behaviour == TOOL_CROWBAR) // hippie -- make holotool work via tool behavior
 					var/obj/item/crowbar/W = C
 					to_chat(user, "<span class='notice'>You start removing the inner layer of shielding...</span>")
 					if(W.use_tool(src, user, 40, volume=100))
@@ -839,7 +875,7 @@
 						update_icon()
 					return
 			if(AIRLOCK_SECURITY_PLASTEEL_I)
-				if(istype(C, /obj/item/weldingtool))
+				if(C.tool_behaviour == TOOL_WELDER) // hippie -- make holotool work via tool behavior
 					if(!C.tool_start_check(user, amount=2))
 						return
 					to_chat(user, "<span class='notice'>You begin cutting the inner layer of shielding...</span>")
@@ -852,7 +888,7 @@
 						security_level = AIRLOCK_SECURITY_PLASTEEL_I_S
 					return
 			if(AIRLOCK_SECURITY_PLASTEEL_O_S)
-				if(istype(C, /obj/item/crowbar))
+				if(C.tool_behaviour == TOOL_CROWBAR) // hippie -- make holotool work via tool behavior
 					to_chat(user, "<span class='notice'>You start removing outer layer of shielding...</span>")
 					if(C.use_tool(src, user, 40, volume=100))
 						if(!panel_open)
@@ -865,7 +901,7 @@
 						spawn_atom_to_turf(/obj/item/stack/sheet/plasteel, user.loc, 1)
 					return
 			if(AIRLOCK_SECURITY_PLASTEEL_O)
-				if(istype(C, /obj/item/weldingtool))
+				if(C.tool_behaviour == TOOL_WELDER) // hippie -- make holotool work via tool behavior
 					if(!C.tool_start_check(user, amount=2))
 						return
 					to_chat(user, "<span class='notice'>You begin cutting the outer layer of shielding...</span>")
@@ -878,7 +914,7 @@
 						security_level = AIRLOCK_SECURITY_PLASTEEL_O_S
 					return
 			if(AIRLOCK_SECURITY_PLASTEEL)
-				if(istype(C, /obj/item/wirecutters))
+				if(C.tool_behaviour == TOOL_WIRECUTTER) // hippie -- make holotool work via tool behavior
 					if(src.hasPower() && src.shock(user, 60)) // Protective grille of wiring is electrified
 						return
 					to_chat(user, "<span class='notice'>You start cutting through the outer grille.</span>")
@@ -889,7 +925,7 @@
 											"<span class='notice'>You cut through \the [src]'s outer grille.</span>")
 						security_level = AIRLOCK_SECURITY_PLASTEEL_O
 					return
-	if(istype(C, /obj/item/screwdriver))
+	if(C.tool_behaviour == TOOL_SCREWDRIVER) // hippie -- make holotool work via tool behavior
 		if(panel_open && detonated)
 			to_chat(user, "<span class='warning'>[src] has no maintenance panel!</span>")
 			return
@@ -897,7 +933,7 @@
 		to_chat(user, "<span class='notice'>You [panel_open ? "open":"close"] the maintenance panel of the airlock.</span>")
 		C.play_tool_sound(src)
 		src.update_icon()
-	else if(istype(C, /obj/item/wirecutters) && note)
+	else if(C.tool_behaviour == TOOL_WIRECUTTER && note) // hippie -- make holotool work via tool behavior
 		user.visible_message("<span class='notice'>[user] cuts down [note] from [src].</span>", "<span class='notice'>You remove [note] from [src].</span>")
 		C.play_tool_sound(src)
 		note.forceMove(get_turf(user))
@@ -1280,7 +1316,7 @@
 		bolt() //Bolt it!
 		set_electrified(ELECTRIFIED_PERMANENT)  //Shock it!
 		if(origin)
-			LAZYADD(shockedby, "\[[time_stamp()]\][origin](ckey:[origin.ckey])")
+			LAZYADD(shockedby, "\[[time_stamp()]\] [key_name(origin)]")
 
 
 /obj/machinery/door/airlock/disable_lockdown()
@@ -1549,8 +1585,8 @@
 	if(wires.is_cut(WIRE_SHOCK))
 		to_chat(user, "The electrification wire has been cut")
 	else
-		LAZYADD(shockedby, "\[[time_stamp()]\][user](ckey:[user.ckey])")
-		add_logs(user, src, "electrified")
+		LAZYADD(shockedby, "\[[time_stamp()]\] [key_name(user)]")
+		log_combat(user, src, "electrified")
 		set_electrified(AI_ELECTRIFY_DOOR_TIME)
 
 /obj/machinery/door/airlock/proc/shock_perm(mob/user)
@@ -1559,8 +1595,8 @@
 	if(wires.is_cut(WIRE_SHOCK))
 		to_chat(user, "The electrification wire has been cut")
 	else
-		LAZYADD(shockedby, text("\[[time_stamp()]\][user](ckey:[user.ckey])"))
-		add_logs(user, src, "electrified")
+		LAZYADD(shockedby, text("\[[time_stamp()]\] [key_name(user)]"))
+		log_combat(user, src, "electrified")
 		set_electrified(ELECTRIFIED_PERMANENT)
 
 /obj/machinery/door/airlock/proc/emergency_on(mob/user)
